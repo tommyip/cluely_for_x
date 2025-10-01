@@ -1,0 +1,19 @@
+{
+  "name": "Cluely for X",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "description": "Reply guys on steroids",
+  "web_accessible_resources": [
+    {
+      "resources": ["injected.js"],
+      "matches": ["https://*.x.com/*", "https://x.com/*"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://*.x.com/*", "https://x.com/*"],
+      "js": ["interceptor.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
