@@ -21,6 +21,9 @@ function userDefinedPostFilter(args) {
     retweet_count,
     created_at,
   } = args;
+  // Remove stale posts regardless of other conditions
+  const postLifetimeMs = new Date() - Date.parse(created_at);
+  if (postLifetimeMs > 2 * 60*60*1000) return false;
   if (is_following) return true;
   if (followers_count > 10000) return true;
   return false;
@@ -31,23 +34,25 @@ function timelineFilter(timelineEntry) {
   if (content.entryType === "TimelineTimelineItem") {
     if (content.itemContent.itemType === "TimelineTweet") {
       const tweet = content.itemContent.tweet_results.result;
-      const user = tweet.core.user_results.result;
-      const result = userDefinedPostFilter({
-        post_text: tweet.legacy.full_text, 
-        is_following: user.relationship_perspectives.following,
-        is_follower: user.relationship_perspectives.followed_by || false,
-        is_verified: user.is_blue_verified,
-        followers_count: user.legacy.followers_count,
-        friends_count: user.legacy.friends_count,
-        views: tweet.views.count ? parseInt(tweet.views.count) : undefined,
-        favourite_count: tweet.legacy.favorite_count,
-        reply_count: tweet.legacy.reply_count,
-        bookmark_count: tweet.legacy.bookmark_count,
-        quote_count: tweet.legacy.quote_count,
-        retweet_count: tweet.legacy.retweet_count,
-        created_at: tweet.legacy.created_at,
-      });
-      return result;
+      if (tweet) {
+        const user = tweet.core.user_results.result;
+        const result = userDefinedPostFilter({
+          post_text: tweet.legacy.full_text, 
+          is_following: user.relationship_perspectives.following,
+          is_follower: user.relationship_perspectives.followed_by || false,
+          is_verified: user.is_blue_verified,
+          followers_count: user.legacy.followers_count,
+          friends_count: user.legacy.friends_count,
+          views: tweet.views.count ? parseInt(tweet.views.count) : undefined,
+          favourite_count: tweet.legacy.favorite_count,
+          reply_count: tweet.legacy.reply_count,
+          bookmark_count: tweet.legacy.bookmark_count,
+          quote_count: tweet.legacy.quote_count,
+          retweet_count: tweet.legacy.retweet_count,
+          created_at: tweet.legacy.created_at,
+        });
+        return result;
+      }
     }
   }
   return true;
