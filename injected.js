@@ -22,7 +22,7 @@ function userDefinedPostFilter(args) {
     created_at,
   } = args;
   if (is_following) return true;
-  if (followers_count > 1000) return true;
+  if (followers_count > 10000) return true;
   return false;
 }
 
